@@ -4,6 +4,7 @@ const { createRouter, createWebHashHistory } = VueRouter;
 import LoginPage from './pages/LoginPage.js';
 import HomePage from './pages/HomePage.js';
 import MyBorrowsPage from './pages/MyBorrowsPage.js';
+import AdminBorrowsPage from './pages/AdminBorrowsPage.js';
 
 const App = {
     setup() {
@@ -31,7 +32,8 @@ const App = {
 const routes = [
     { path: '/login', component: LoginPage },
     { path: '/', component: HomePage },
-    { path: '/my-borrows', component: MyBorrowsPage }
+    { path: '/my-borrows', component: MyBorrowsPage },
+    { path: '/admin/borrows', component: AdminBorrowsPage }
 ];
 
 const router = createRouter({
