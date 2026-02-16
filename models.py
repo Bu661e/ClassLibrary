@@ -60,3 +60,52 @@ class Book(db.Model):
             'status': self.status,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
+
+
+class BorrowRecord(db.Model):
+    __tablename__ = 'borrow_records'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id'), nullable=False)
+    borrower_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    status = db.Column(db.String(20), default='pending')  # pending, donor_pending, approved, return_pending, completed, rejected
+    request_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    approve_at = db.Column(db.DateTime, nullable=True)
+    return_at = db.Column(db.DateTime, nullable=True)
+    
+    book = db.relationship('Book')
+    borrower = db.relationship('User', foreign_keys=[borrower_id])
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'book_id': self.book_id,
+            'book_title': self.book.title if self.book else None,
+            'borrower_id': self.borrower_id,
+            'borrower_name': self.borrower.name if self.borrower else None,
+            'status': self.status,
+            'request_at': self.request_at.isoformat() if self.request_at else None,
+            'approve_at': self.approve_at.isoformat() if self.approve_at else None,
+            'return_at': self.return_at.isoformat() if self.return_at else None
+        }
+
+
+class DonorConfirm(db.Model):
+    __tablename__ = 'donor_confirms'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    borrow_record_id = db.Column(db.Integer, db.ForeignKey('borrow_records.id'), nullable=False)
+    donor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
+    confirmed_at = db.Column(db.DateTime, nullable=True)
+    
+    borrow_record = db.relationship('BorrowRecord')
+    donor = db.relationship('User')
+
+
+class Setting(db.Model):
+    __tablename__ = 'settings'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(50), unique=True, nullable=False)
+    value = db.Column(db.String(255))
