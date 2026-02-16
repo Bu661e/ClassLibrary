@@ -125,6 +125,7 @@ export default {
                 <h1>班级图书共享管理系统</h1>
                 <div>
                     <span style="margin-right: 20px;">{{ user?.name }}</span>
+                    <el-button type="info" size="small" @click="$router.push('/my-borrows')">我的借阅</el-button>
                     <el-button v-if="isAdmin" type="success" size="small" @click="showAddDialog">录入图书</el-button>
                     <el-button type="danger" size="small" @click="logout">退出</el-button>
                 </div>
