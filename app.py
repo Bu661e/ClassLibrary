@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_login import LoginManager
 from config import Config
 from models import db, User
@@ -20,6 +20,12 @@ app.register_blueprint(auth.bp)
 app.register_blueprint(books.bp)
 app.register_blueprint(borrow.bp)
 app.register_blueprint(admin.bp)
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 
 if __name__ == '__main__':
     with app.app_context():
