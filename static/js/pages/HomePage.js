@@ -1,5 +1,5 @@
 const { ref, onMounted } = Vue;
-const { ElMessage } = ElementPlus;
+const { ElMessage, ElMessageBox } = ElementPlus;
 import { bookApi, borrowApi } from '../api.js';
 
 export default {
@@ -9,6 +9,16 @@ export default {
         const loading = ref(false);
         const searchKeyword = ref('');
         const user = ref(JSON.parse(localStorage.getItem('user') || 'null'));
+        const isAdmin = ref(user.value?.is_admin || false);
+        const dialogVisible = ref(false);
+        const newBook = ref({
+            title: '',
+            author: '',
+            publisher: '',
+            isbn: '',
+            tags: '',
+            source: 'class'
+        });
 
         const loadBooks = async () => {
             loading.value = true;
@@ -63,6 +73,33 @@ export default {
             window.location.href = '/#/login';
         };
 
+        const showAddDialog = () => {
+            dialogVisible.value = true;
+            newBook.value = {
+                title: '',
+                author: '',
+                publisher: '',
+                isbn: '',
+                tags: '',
+                source: 'class'
+            };
+        };
+
+        const handleAddBook = async () => {
+            if (!newBook.value.title || !newBook.value.author || !newBook.value.publisher) {
+                ElMessage.warning('请填写书名、作者和出版社');
+                return;
+            }
+            try {
+                await bookApi.create(newBook.value);
+                ElMessage.success('图书录入成功');
+                dialogVisible.value = false;
+                loadBooks();
+            } catch (error) {
+                ElMessage.error(error.message || '录入失败');
+            }
+        };
+
         onMounted(loadBooks);
 
         return {
@@ -70,11 +107,16 @@ export default {
             loading,
             searchKeyword,
             user,
+            isAdmin,
+            dialogVisible,
+            newBook,
             handleSearch,
             handleBorrow,
             getStatusText,
             getStatusType,
-            logout
+            logout,
+            showAddDialog,
+            handleAddBook
         };
     },
     template: `
@@ -83,6 +125,7 @@ export default {
                 <h1>班级图书共享管理系统</h1>
                 <div>
                     <span style="margin-right: 20px;">{{ user?.name }}</span>
+                    <el-button v-if="isAdmin" type="success" size="small" @click="showAddDialog">录入图书</el-button>
                     <el-button type="danger" size="small" @click="logout">退出</el-button>
                 </div>
             </el-header>
@@ -125,6 +168,37 @@ export default {
                     </el-col>
                 </el-row>
             </el-main>
+
+            <!-- 录入图书弹窗 -->
+            <el-dialog v-model="dialogVisible" title="录入图书" width="500px">
+                <el-form :model="newBook" label-width="80px">
+                    <el-form-item label="书名" required>
+                        <el-input v-model="newBook.title" placeholder="请输入书名" />
+                    </el-form-item>
+                    <el-form-item label="作者" required>
+                        <el-input v-model="newBook.author" placeholder="请输入作者" />
+                    </el-form-item>
+                    <el-form-item label="出版社" required>
+                        <el-input v-model="newBook.publisher" placeholder="请输入出版社" />
+                    </el-form-item>
+                    <el-form-item label="ISBN">
+                        <el-input v-model="newBook.isbn" placeholder="请输入ISBN" />
+                    </el-form-item>
+                    <el-form-item label="标签">
+                        <el-input v-model="newBook.tags" placeholder="多个标签用逗号分隔，如：编程,Python" />
+                    </el-form-item>
+                    <el-form-item label="来源">
+                        <el-radio-group v-model="newBook.source">
+                            <el-radio label="class">班级购买</el-radio>
+                            <el-radio label="donated">个人捐赠</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                </el-form>
+                <template #footer>
+                    <el-button @click="dialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="handleAddBook">确定</el-button>
+                </template>
+            </el-dialog>
         </div>
     `
 };
