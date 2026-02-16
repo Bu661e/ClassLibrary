@@ -15,9 +15,10 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # Register blueprints
-from routes import auth, books
+from routes import auth, books, borrow
 app.register_blueprint(auth.bp)
 app.register_blueprint(books.bp)
+app.register_blueprint(borrow.bp)
 
 if __name__ == '__main__':
     with app.app_context():
