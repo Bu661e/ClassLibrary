@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Users/haitong/Code_ws/图书管理系统/requirements.txt:*)",
+      "Bash(/Users/haitong/Code_ws/图书管理系统/config.py:*)",
+      "Bash(/Users/haitong/Code_ws/图书管理系统/app.py:*)",
+      "Bash(/Users/haitong/Code_ws/图书管理系统/.gitignore:*)",
+      "Bash(python3 -c:*)",
+      "Bash(uv venv:*)",
+      "Bash(uv pip install:*)",
+      "Bash(source:*)",
+      "Bash(timeout 3 python:*)",
+      "Bash(python -c:*)",
+      "Bash(git init:*)",
+      "Bash(git branch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
