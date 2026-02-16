@@ -2,6 +2,7 @@ const { createApp, ref } = Vue;
 const { createRouter, createWebHashHistory } = VueRouter;
 
 import LoginPage from './pages/LoginPage.js';
+import HomePage from './pages/HomePage.js';
 
 const App = {
     setup() {
@@ -28,7 +29,7 @@ const App = {
 
 const routes = [
     { path: '/login', component: LoginPage },
-    { path: '/', component: { template: '<div>首页</div>' } }
+    { path: '/', component: HomePage }
 ];
 
 const router = createRouter({
