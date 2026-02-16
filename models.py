@@ -28,3 +28,35 @@ class User(UserMixin, db.Model):
             'name': self.name,
             'is_admin': self.is_admin
         }
+
+
+class Book(db.Model):
+    __tablename__ = 'books'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    author = db.Column(db.String(50), nullable=False)
+    publisher = db.Column(db.String(100), nullable=False)
+    isbn = db.Column(db.String(20))
+    tags = db.Column(db.String(200))
+    source = db.Column(db.String(20), default='class')  # class, donated
+    donor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    status = db.Column(db.String(20), default='available')  # available, pending_borrow, borrowed, pending_return, unavailable
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    
+    donor = db.relationship('User', foreign_keys=[donor_id])
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'author': self.author,
+            'publisher': self.publisher,
+            'isbn': self.isbn,
+            'tags': self.tags.split(',') if self.tags else [],
+            'source': self.source,
+            'donor_id': self.donor_id,
+            'donor_name': self.donor.name if self.donor else None,
+            'status': self.status,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
