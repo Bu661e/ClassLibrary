@@ -101,6 +101,16 @@ class DonorConfirm(db.Model):
     
     borrow_record = db.relationship('BorrowRecord')
     donor = db.relationship('User')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'borrow_record_id': self.borrow_record_id,
+            'donor_id': self.donor_id,
+            'status': self.status,
+            'confirmed_at': self.confirmed_at.isoformat() if self.confirmed_at else None
+        }
+
 
 
 class Setting(db.Model):
@@ -109,3 +119,11 @@ class Setting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(50), unique=True, nullable=False)
     value = db.Column(db.String(255))
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'key': self.key,
+            'value': self.value
+        }
+
