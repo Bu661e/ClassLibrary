@@ -15,7 +15,15 @@
       "Bash(git branch:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git -C:*)"
+      "Bash(git -C:*)",
+      "Bash(/Users/haitong/Code_ws/图书管理系统/models.py:*)",
+      "Bash(/Users/haitong/Code_ws/图书管理系统/tests/__init__.py:*)",
+      "Bash(/Users/haitong/Code_ws/图书管理系统/tests/test_models.py:*)",
+      "Bash(/Users/haitong/Code_ws/图书管理系统/routes/__init__.py:*)",
+      "Bash(pip install:*)",
+      "Bash(pip3 install:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(python -m pip:*)"
     ]
   }
 }
