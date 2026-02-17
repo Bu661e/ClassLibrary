@@ -139,20 +139,9 @@ const AdminBorrowsPage = {
     template: `
         <div class="admin-borrows-page">
             <!-- 顶部导航栏 -->
-            <el-header class="header">
-                <div class="header-content">
-                    <h1 class="logo">图书管理系统</h1>
-                    <div class="nav-menu">
-                        <el-link type="primary" href="/#/">首页</el-link>
-                        <el-link type="primary" href="/#/my-borrows">我的借阅</el-link>
-                        <el-link type="primary" href="/#/admin/borrows" v-if="isAdmin">借阅审核</el-link>
-                    </div>
-                    <div class="user-info">
-                        <el-tag type="danger" v-if="isAdmin">管理员</el-tag>
-                        <span class="username">{{ user?.name }}</span>
-                        <el-button type="danger" size="small" @click="logout">退出</el-button>
-                    </div>
-                </div>
+            <el-header style="background: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
+                <h1>借阅审核</h1>
+                <el-button type="danger" size="small" @click="logout">退出</el-button>
             </el-header>
 
             <!-- 主内容区 -->

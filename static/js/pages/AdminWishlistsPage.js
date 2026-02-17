@@ -106,11 +106,7 @@ export default {
         <div>
             <el-header style="background: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
                 <h1>心愿单管理</h1>
-                <div>
-                    <span style="margin-right: 20px;">{{ user?.name }}</span>
-                    <el-button type="primary" size="small" @click="$router.push('/admin')">返回首页</el-button>
-                    <el-button type="danger" size="small" @click="logout">退出</el-button>
-                </div>
+                <el-button type="danger" size="small" @click="logout">退出</el-button>
             </el-header>
 
             <el-main v-loading="loading">

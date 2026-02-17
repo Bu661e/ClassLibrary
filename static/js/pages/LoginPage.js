@@ -10,6 +10,7 @@ export default {
             password: ''
         });
         const loading = ref(false);
+        const loginType = ref('student'); // 'admin' or 'student'
 
         const handleLogin = async () => {
             if (!form.value.student_id || !form.value.password) {
@@ -22,7 +23,8 @@ export default {
                 const res = await authApi.login(form.value.student_id, form.value.password);
                 localStorage.setItem('user', JSON.stringify(res.user));
                 ElMessage.success('登录成功');
-                // 管理员跳转到管理后台，学生跳转到首页
+
+                // 根据登录类型或用户角色跳转到对应页面
                 if (res.user.is_admin) {
                     window.location.href = '/#/admin';
                 } else {
@@ -35,7 +37,7 @@ export default {
             }
         };
 
-        return { form, loading, handleLogin };
+        return { form, loading, loginType, handleLogin };
     },
     template: `
         <div class="login-container">
@@ -43,9 +45,16 @@ export default {
                 <template #header>
                     <h2 style="text-align: center;">班级图书共享管理系统</h2>
                 </template>
+
+                <!-- 登录类型切换 -->
+                <el-tabs v-model="loginType" style="margin-bottom: 20px;">
+                    <el-tab-pane label="学生登录" name="student" />
+                    <el-tab-pane label="管理员登录" name="admin" />
+                </el-tabs>
+
                 <el-form :model="form" label-position="top">
-                    <el-form-item label="学号">
-                        <el-input v-model="form.student_id" placeholder="请输入学号" />
+                    <el-form-item :label="loginType === 'admin' ? '管理员账号' : '学号'">
+                        <el-input v-model="form.student_id" :placeholder="loginType === 'admin' ? '请输入管理员账号' : '请输入学号'" />
                     </el-form-item>
                     <el-form-item label="密码">
                         <el-input v-model="form.password" type="password" placeholder="请输入密码" @keyup.enter="handleLogin" />

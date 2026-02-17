@@ -209,15 +209,8 @@ export default {
         <div>
             <!-- 顶部导航栏 -->
             <el-header style="background: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
-                <h1>班级图书共享管理系统 - 图书管理</h1>
-                <div>
-                    <span style="margin-right: 20px;">{{ user?.name }}</span>
-                    <el-button type="info" size="small" @click="$router.push('/admin')">数据看板</el-button>
-                    <el-button type="primary" size="small" @click="$router.push('/admin/borrows')">借阅审核</el-button>
-                    <el-button type="warning" size="small" @click="$router.push('/admin/users')">用户管理</el-button>
-                    <el-button type="info" size="small" @click="$router.push('/')">返回首页</el-button>
-                    <el-button type="danger" size="small" @click="logout">退出</el-button>
-                </div>
+                <h1>图书管理</h1>
+                <el-button type="danger" size="small" @click="logout">退出</el-button>
             </el-header>
 
             <el-main v-loading="loading">

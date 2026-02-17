@@ -111,22 +111,15 @@ export default {
         <div>
             <!-- 顶部导航栏 -->
             <el-header style="background: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
-                <h1>班级图书共享管理系统 - 用户管理</h1>
-                <div>
-                    <span style="margin-right: 20px;">{{ user?.name }}</span>
-                    <el-button type="info" size="small" @click="$router.push('/admin')">数据看板</el-button>
-                    <el-button type="primary" size="small" @click="$router.push('/admin/borrows')">借阅审核</el-button>
-                    <el-button type="success" size="small" @click="$router.push('/admin/books')">图书管理</el-button>
-                    <el-button type="info" size="small" @click="$router.push('/')">返回首页</el-button>
-                    <el-button type="danger" size="small" @click="logout">退出</el-button>
-                </div>
+                <h1>用户管理</h1>
+                <el-button type="danger" size="small" @click="logout">退出</el-button>
             </el-header>
 
             <el-main v-loading="loading">
                 <el-card>
                     <template #header>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h2 style="margin: 0;">用户管理</h2>
+                            <h2 style="margin: 0;">班级图书共享管理系统 - 用户管理</h2>
                             <el-button type="primary" size="small" @click="showAddDialog">
                                 新增用户
                             </el-button>
