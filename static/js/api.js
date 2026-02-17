@@ -58,11 +58,40 @@ export const adminApi = {
     deleteUser: (id) => request(`/admin/users/${id}`, { method: 'DELETE' }),
     getDashboard: () => request('/admin/dashboard'),
     getSettings: () => request('/admin/settings'),
-    updateSettings: (data) => request('/admin/settings', { method: 'PUT', body: JSON.stringify(data) })
+    updateSettings: (data) => request('/admin/settings', { method: 'PUT', body: JSON.stringify(data) }),
+    sendReminder: (recordIds) => request('/admin/overdue/send-reminder', {
+        method: 'POST',
+        body: JSON.stringify({ record_ids: recordIds })
+    })
 };
 
 export const donorApi = {
     getConfirms: () => request('/donor/confirms'),
     approve: (id) => request(`/donor/confirms/${id}/approve`, { method: 'PUT' }),
     reject: (id) => request(`/donor/confirms/${id}/reject`, { method: 'PUT' })
+};
+
+export const reviewApi = {
+    getBookReviews: (bookId) => request(`/books/${bookId}/reviews`),
+    createReview: (bookId, data) => request(`/books/${bookId}/reviews`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+    })
+};
+
+export const wishlistApi = {
+    list: () => request('/wishlists'),
+    add: (data) => request('/wishlists', { method: 'POST', body: JSON.stringify(data) }),
+    delete: (id) => request(`/wishlists/${id}`, { method: 'DELETE' }),
+    adminList: (status) => request(`/admin/wishlists${status ? `?status=${status}` : ''}`),
+    fulfill: (id) => request(`/admin/wishlists/${id}/fulfill`, { method: 'PUT' }),
+    reject: (id) => request(`/admin/wishlists/${id}/reject`, { method: 'PUT' })
+};
+
+export const donationApi = {
+    list: () => request('/donations'),
+    add: (data) => request('/donations', { method: 'POST', body: JSON.stringify(data) }),
+    adminList: (status) => request(`/admin/donations${status ? `?status=${status}` : ''}`),
+    approve: (id) => request(`/admin/donations/${id}/approve`, { method: 'PUT' }),
+    reject: (id) => request(`/admin/donations/${id}/reject`, { method: 'PUT' })
 };

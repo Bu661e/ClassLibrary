@@ -68,6 +68,19 @@ export default {
         const getStatusText = (status) => statusMap[status] || status;
         const getStatusType = (status) => statusTypeMap[status] || 'info';
 
+        // 计算剩余天数
+        const getRemainingDays = (record) => {
+            if (record.status !== 'approved' || !record.approve_at) return null;
+            const approveDate = new Date(record.approve_at);
+            const maxDays = 30; // 默认30天，应该从设置中获取
+            const dueDate = new Date(approveDate);
+            dueDate.setDate(dueDate.getDate() + maxDays);
+            const now = new Date();
+            const diffTime = dueDate - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        };
+
         const formatDate = (dateStr) => {
             if (!dateStr) return '-';
             const date = new Date(dateStr);
@@ -91,6 +104,7 @@ export default {
             handleReturn,
             getStatusText,
             getStatusType,
+            getRemainingDays,
             formatDate,
             logout
         };
@@ -110,17 +124,27 @@ export default {
                 <el-tabs v-model="activeTab">
                     <el-tab-pane label="当前借阅" name="current">
                         <el-table :data="currentRecords" style="width: 100%" empty-text="暂无借阅记录">
-                            <el-table-column prop="book_title" label="书名" min-width="200" />
+                            <el-table-column prop="book_title" label="书名" min-width="180" />
                             <el-table-column label="申请时间" width="180">
                                 <template #default="scope">
                                     {{ formatDate(scope.row.created_at) }}
                                 </template>
                             </el-table-column>
-                            <el-table-column label="状态" width="120">
+                            <el-table-column label="状态" width="100">
                                 <template #default="scope">
                                     <el-tag :type="getStatusType(scope.row.status)" size="small">
                                         {{ getStatusText(scope.row.status) }}
                                     </el-tag>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="剩余天数" width="100">
+                                <template #default="scope">
+                                    <span v-if="scope.row.status === 'approved'">
+                                        <span :style="{ color: getRemainingDays(scope.row) <= 3 ? '#F56C6C' : (getRemainingDays(scope.row) <= 7 ? '#E6A23C' : '#67C23A') }">
+                                            {{ getRemainingDays(scope.row) }}天
+                                        </span>
+                                    </span>
+                                    <span v-else>-</span>
                                 </template>
                             </el-table-column>
                             <el-table-column label="操作" width="120" fixed="right">

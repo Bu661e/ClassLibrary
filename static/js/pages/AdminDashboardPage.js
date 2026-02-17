@@ -38,6 +38,21 @@ export default {
             return date.toLocaleDateString('zh-CN');
         };
 
+        const sendReminder = async () => {
+            if (overdueRecords.value.length === 0) {
+                ElMessage.warning('没有逾期记录');
+                return;
+            }
+
+            try {
+                const recordIds = overdueRecords.value.map(r => r.id);
+                const res = await adminApi.sendReminder(recordIds);
+                ElMessage.success(res.message);
+            } catch (error) {
+                ElMessage.error(error.message || '发送提醒失败');
+            }
+        };
+
         const logout = () => {
             localStorage.removeItem('user');
             window.location.href = '/#/login';
@@ -53,6 +68,7 @@ export default {
             loading,
             user,
             formatDate,
+            sendReminder,
             logout
         };
     },
@@ -153,9 +169,14 @@ export default {
                     <template #header>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <h3 style="margin: 0; color: #F56C6C;">逾期未还图书</h3>
-                            <el-button type="primary" size="small" @click="loadDashboard">
-                                刷新
-                            </el-button>
+                            <div>
+                                <el-button type="warning" size="small" @click="sendReminder" :disabled="overdueRecords.length === 0">
+                                    一键提醒
+                                </el-button>
+                                <el-button type="primary" size="small" @click="loadDashboard">
+                                    刷新
+                                </el-button>
+                            </div>
                         </div>
                     </template>
                     <el-table :data="overdueRecords" style="width: 100%">

@@ -124,10 +124,16 @@ export default {
             <el-header style="background: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
                 <h1>班级图书共享管理系统</h1>
                 <div>
-                    <span style="margin-right: 20px;">{{ user?.name }}</span>
-                    <el-button type="info" size="small" @click="$router.push('/my-borrows')">我的借阅</el-button>
-                    <el-button type="success" size="small" @click="$router.push('/donor-confirms')">捐赠确认</el-button>
-                    <el-button v-if="isAdmin" type="primary" size="small" @click="$router.push('/admin')">管理后台</el-button>
+                    <span style="margin-right: 20px;">{{ user?.name }} <el-tag v-if="isAdmin" type="danger" size="small">管理员</el-tag></span>
+                    <!-- 学生功能按钮 -->
+                    <template v-if="!isAdmin">
+                        <el-button type="info" size="small" @click="$router.push('/my-borrows')">我的借阅</el-button>
+                        <el-button type="success" size="small" @click="$router.push('/donor-confirms')">捐赠确认</el-button>
+                        <el-button type="warning" size="small" @click="$router.push('/wishlist')">心愿单</el-button>
+                        <el-button type="primary" size="small" @click="$router.push('/donations')">我的捐赠</el-button>
+                    </template>
+                    <!-- 管理员入口 -->
+                    <el-button v-if="isAdmin" type="danger" size="small" @click="$router.push('/admin')">管理后台</el-button>
                     <el-button type="danger" size="small" @click="logout">退出</el-button>
                 </div>
             </el-header>
@@ -141,12 +147,16 @@ export default {
                             </template>
                         </el-input>
                     </el-col>
+                    <!-- 录入图书按钮仅管理员可见 -->
+                    <el-col :span="8" v-if="isAdmin">
+                        <el-button type="success" @click="showAddDialog">录入图书</el-button>
+                    </el-col>
                 </el-row>
 
                 <el-row :gutter="20" v-loading="loading">
                     <el-col :span="6" v-for="book in books" :key="book.id" style="margin-bottom: 20px;">
                         <el-card :body-style="{ padding: '15px' }">
-                            <h3 style="cursor: pointer; color: #409EFF; margin-bottom: 10px;">
+                            <h3 style="cursor: pointer; color: #409EFF; margin-bottom: 10px;" @click="$router.push('/books/' + book.id)">
                                 {{ book.title }}
                             </h3>
                             <p>作者: {{ book.author }}</p>
@@ -157,8 +167,9 @@ export default {
                                     {{ getStatusText(book.status) }}
                                 </el-tag>
                             </p>
+                            <!-- 借阅按钮仅学生可见 -->
                             <el-button
-                                v-if="book.status === 'available'"
+                                v-if="!isAdmin && book.status === 'available'"
                                 type="primary"
                                 size="small"
                                 @click="handleBorrow(book)"

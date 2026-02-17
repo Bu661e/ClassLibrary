@@ -1,4 +1,6 @@
 const { ref, onMounted, computed } = Vue;
+const { ElMessage } = ElementPlus;
+import { adminApi, authApi } from '../api.js';
 
 const AdminBorrowsPage = {
     setup() {
@@ -37,7 +39,7 @@ const AdminBorrowsPage = {
                 
                 borrowRecords.value = [...pending, ...donorPending];
             } catch (error) {
-                ElementPlus.ElMessage.error('获取借阅申请失败: ' + error.message);
+                ElMessage.error('获取借阅申请失败: ' + error.message);
             } finally {
                 loading.value = false;
             }
@@ -50,7 +52,7 @@ const AdminBorrowsPage = {
                 const res = await adminApi.getBorrows('return_pending');
                 returnRecords.value = res.data || [];
             } catch (error) {
-                ElementPlus.ElMessage.error('获取归还申请失败: ' + error.message);
+                ElMessage.error('获取归还申请失败: ' + error.message);
             } finally {
                 loading.value = false;
             }
@@ -60,10 +62,10 @@ const AdminBorrowsPage = {
         const approveBorrow = async (id) => {
             try {
                 await adminApi.approveBorrow(id);
-                ElementPlus.ElMessage.success('已通过借阅申请');
+                ElMessage.success('已通过借阅申请');
                 fetchBorrowRecords();
             } catch (error) {
-                ElementPlus.ElMessage.error('操作失败: ' + error.message);
+                ElMessage.error('操作失败: ' + error.message);
             }
         };
 
@@ -71,10 +73,10 @@ const AdminBorrowsPage = {
         const rejectBorrow = async (id) => {
             try {
                 await adminApi.rejectBorrow(id);
-                ElementPlus.ElMessage.success('已拒绝借阅申请');
+                ElMessage.success('已拒绝借阅申请');
                 fetchBorrowRecords();
             } catch (error) {
-                ElementPlus.ElMessage.error('操作失败: ' + error.message);
+                ElMessage.error('操作失败: ' + error.message);
             }
         };
 
@@ -82,10 +84,10 @@ const AdminBorrowsPage = {
         const confirmReturn = async (id) => {
             try {
                 await adminApi.confirmReturn(id);
-                ElementPlus.ElMessage.success('已确认收书');
+                ElMessage.success('已确认收书');
                 fetchReturnRecords();
             } catch (error) {
-                ElementPlus.ElMessage.error('操作失败: ' + error.message);
+                ElMessage.error('操作失败: ' + error.message);
             }
         };
 
@@ -111,7 +113,7 @@ const AdminBorrowsPage = {
         onMounted(() => {
             // 非管理员跳回首页
             if (!isAdmin.value) {
-                ElementPlus.ElMessage.warning('您没有权限访问此页面');
+                ElMessage.warning('您没有权限访问此页面');
                 window.location.href = '/#/';
                 return;
             }

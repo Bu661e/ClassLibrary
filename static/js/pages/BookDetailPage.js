@@ -1,6 +1,6 @@
 const { ref, onMounted } = Vue;
 const { ElMessage } = ElementPlus;
-import { bookApi, borrowApi } from '../api.js';
+import { bookApi, borrowApi, reviewApi } from '../api.js';
 
 export default {
     name: 'BookDetailPage',
@@ -8,6 +8,14 @@ export default {
         const book = ref(null);
         const loading = ref(false);
         const borrowLoading = ref(false);
+        const reviews = ref([]);
+        const reviewLoading = ref(false);
+        const showReviewDialog = ref(false);
+        const newReview = ref({
+            rating: 5,
+            content: '',
+            review_type: 'neutral'
+        });
         const user = ref(JSON.parse(localStorage.getItem('user') || 'null'));
         const isAdmin = ref(user.value?.is_admin || false);
 
@@ -22,10 +30,23 @@ export default {
             try {
                 const res = await bookApi.get(bookId);
                 book.value = res.book;
+                loadReviews(bookId);
             } catch (error) {
                 ElMessage.error('加载图书详情失败');
             } finally {
                 loading.value = false;
+            }
+        };
+
+        const loadReviews = async (bookId) => {
+            reviewLoading.value = true;
+            try {
+                const res = await reviewApi.getBookReviews(bookId);
+                reviews.value = res.reviews || [];
+            } catch (error) {
+                console.error('加载评价失败', error);
+            } finally {
+                reviewLoading.value = false;
             }
         };
 
@@ -42,6 +63,38 @@ export default {
             } finally {
                 borrowLoading.value = false;
             }
+        };
+
+        const submitReview = async () => {
+            if (!book.value || !user.value) return;
+
+            try {
+                await reviewApi.createReview(book.value.id, newReview.value);
+                ElMessage.success('评价已提交');
+                showReviewDialog.value = false;
+                newReview.value = { rating: 5, content: '', review_type: 'neutral' };
+                loadReviews(book.value.id);
+            } catch (error) {
+                ElMessage.error(error.message || '提交失败');
+            }
+        };
+
+        const getRatingText = (type) => {
+            const map = {
+                'recommend': '推荐',
+                'warn': '防雷',
+                'neutral': '中立'
+            };
+            return map[type] || type;
+        };
+
+        const getRatingType = (type) => {
+            const map = {
+                'recommend': 'success',
+                'warn': 'danger',
+                'neutral': 'info'
+            };
+            return map[type] || 'info';
         };
 
         const getStatusText = (status) => {
@@ -95,12 +148,19 @@ export default {
             book,
             loading,
             borrowLoading,
+            reviews,
+            reviewLoading,
+            showReviewDialog,
+            newReview,
             user,
             isAdmin,
             handleBorrow,
+            submitReview,
             getStatusText,
             getStatusType,
             getSourceText,
+            getRatingText,
+            getRatingType,
             formatDate,
             logout,
             goBack
@@ -158,14 +218,23 @@ export default {
 
                         <!-- 操作按钮 -->
                         <div style="margin-top: 20px; text-align: center;">
+                            <!-- 学生可以看到借阅按钮，管理员不能借阅 -->
                             <el-button
-                                v-if="book.status === 'available'"
+                                v-if="!isAdmin && book.status === 'available'"
                                 type="primary"
                                 size="large"
                                 :loading="borrowLoading"
                                 @click="handleBorrow"
                             >
                                 申请借阅
+                            </el-button>
+                            <el-button
+                                v-else-if="isAdmin"
+                                type="info"
+                                size="large"
+                                disabled
+                            >
+                                管理员不可借阅
                             </el-button>
                             <el-button
                                 v-else
@@ -225,6 +294,62 @@ export default {
                         <p><strong>借阅日期：</strong>{{ formatDate(book.current_borrow.borrow_date) }}</p>
                         <p v-if="book.current_borrow.return_date"><strong>归还日期：</strong>{{ formatDate(book.current_borrow.return_date) }}</p>
                     </el-card>
+
+                    <!-- 图书评价 -->
+                    <el-card style="margin-top: 20px;">
+                        <template #header>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h3 style="margin: 0;">图书评价</h3>
+                                <el-button v-if="user && !isAdmin" type="primary" size="small" @click="showReviewDialog = true">
+                                    写评价
+                                </el-button>
+                            </div>
+                        </template>
+
+                        <div v-loading="reviewLoading">
+                            <div v-if="reviews.length === 0" style="text-align: center; color: #999; padding: 20px;">
+                                暂无评价，快来抢先评价吧！
+                            </div>
+                            <div v-else>
+                                <div v-for="review in reviews" :key="review.id" style="padding: 15px; border-bottom: 1px solid #eee;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <strong>{{ review.user_name }}</strong>
+                                            <el-rate v-model="review.rating" disabled style="margin-left: 10px;" />
+                                        </div>
+                                        <el-tag :type="getRatingType(review.review_type)" size="small">
+                                            {{ getRatingText(review.review_type) }}
+                                        </el-tag>
+                                    </div>
+                                    <p style="margin-top: 10px; color: #666;">{{ review.content || '无评价内容' }}</p>
+                                    <p style="font-size: 12px; color: #999;">{{ formatDate(review.created_at) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </el-card>
+
+                    <!-- 写评价弹窗 -->
+                    <el-dialog v-model="showReviewDialog" title="写评价" width="500px">
+                        <el-form label-width="80px">
+                            <el-form-item label="评分">
+                                <el-rate v-model="newReview.rating" />
+                            </el-form-item>
+                            <el-form-item label="类型">
+                                <el-radio-group v-model="newReview.review_type">
+                                    <el-radio label="recommend">推荐（安利）</el-radio>
+                                    <el-radio label="warn">防雷</el-radio>
+                                    <el-radio label="neutral">中立</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                            <el-form-item label="评价">
+                                <el-input v-model="newReview.content" type="textarea" rows="4" placeholder="写下你的评价..." />
+                            </el-form-item>
+                        </el-form>
+                        <template #footer>
+                            <el-button @click="showReviewDialog = false">取消</el-button>
+                            <el-button type="primary" @click="submitReview">提交</el-button>
+                        </template>
+                    </el-dialog>
                 </template>
 
                 <!-- 图书不存在提示 -->

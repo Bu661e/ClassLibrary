@@ -47,6 +47,18 @@ export default {
                         <el-icon><document /></el-icon>
                         <span>借阅审核</span>
                     </el-menu-item>
+                    <el-menu-item index="/admin/donations">
+                        <el-icon><present /></el-icon>
+                        <span>捐赠审核</span>
+                    </el-menu-item>
+                    <el-menu-item index="/admin/wishlists">
+                        <el-icon><star /></el-icon>
+                        <span>心愿单</span>
+                    </el-menu-item>
+                    <el-menu-item index="/admin/settings">
+                        <el-icon><setting /></el-icon>
+                        <span>系统设置</span>
+                    </el-menu-item>
                     <el-menu-item index="/admin/users">
                         <el-icon><user /></el-icon>
                         <span>用户管理</span>

@@ -22,7 +22,12 @@ export default {
                 const res = await authApi.login(form.value.student_id, form.value.password);
                 localStorage.setItem('user', JSON.stringify(res.user));
                 ElMessage.success('登录成功');
-                window.location.href = '/';
+                // 管理员跳转到管理后台，学生跳转到首页
+                if (res.user.is_admin) {
+                    window.location.href = '/#/admin';
+                } else {
+                    window.location.href = '/';
+                }
             } catch (error) {
                 ElMessage.error(error.message || '登录失败');
             } finally {

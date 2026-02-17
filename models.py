@@ -92,7 +92,7 @@ class BorrowRecord(db.Model):
     approve_at = db.Column(db.DateTime, nullable=True)
     return_at = db.Column(db.DateTime, nullable=True)
     
-    book = db.relationship('Book')
+    book = db.relationship('Book', overlaps='borrow_records')
     borrower = db.relationship('User', foreign_keys=[borrower_id])
     
     def to_dict(self):
@@ -136,15 +136,105 @@ class DonorConfirm(db.Model):
 
 class Setting(db.Model):
     __tablename__ = 'settings'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(50), unique=True, nullable=False)
     value = db.Column(db.String(255))
-    
+
     def to_dict(self):
         return {
             'id': self.id,
             'key': self.key,
             'value': self.value
+        }
+
+
+class BookReview(db.Model):
+    __tablename__ = 'book_reviews'
+
+    id = db.Column(db.Integer, primary_key=True)
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)  # 1-5 评分
+    content = db.Column(db.Text)  # 评价内容
+    review_type = db.Column(db.String(20), default='neutral')  # 'recommend'(推荐/安利), 'warn'(防雷), 'neutral'(中立)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    book = db.relationship('Book', backref='reviews')
+    user = db.relationship('User')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'book_id': self.book_id,
+            'book_title': self.book.title if self.book else None,
+            'user_id': self.user_id,
+            'user_name': self.user.name if self.user else None,
+            'rating': self.rating,
+            'content': self.content,
+            'review_type': self.review_type,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
+
+class WishList(db.Model):
+    __tablename__ = 'wish_lists'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    book_title = db.Column(db.String(100), nullable=False)
+    author = db.Column(db.String(50))
+    publisher = db.Column(db.String(100))
+    isbn = db.Column(db.String(20))
+    reason = db.Column(db.Text)  # 想看的原因
+    status = db.Column(db.String(20), default='pending')  # pending, fulfilled, rejected
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    user = db.relationship('User')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'user_name': self.user.name if self.user else None,
+            'book_title': self.book_title,
+            'author': self.author,
+            'publisher': self.publisher,
+            'isbn': self.isbn,
+            'reason': self.reason,
+            'status': self.status,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
+
+class DonationRequest(db.Model):
+    __tablename__ = 'donation_requests'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    author = db.Column(db.String(50))
+    publisher = db.Column(db.String(100))
+    isbn = db.Column(db.String(20))
+    tags = db.Column(db.String(200))
+    reason = db.Column(db.Text)  # 捐赠说明
+    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    user = db.relationship('User')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'user_name': self.user.name if self.user else None,
+            'title': self.title,
+            'author': self.author,
+            'publisher': self.publisher,
+            'isbn': self.isbn,
+            'tags': self.tags,
+            'reason': self.reason,
+            'status': self.status,
+            'created_at': self.created_at.isoformat() if self.created_at else None
         }
 

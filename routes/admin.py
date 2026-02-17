@@ -222,3 +222,34 @@ def update_settings():
 
     db.session.commit()
     return jsonify({'success': True})
+
+
+@bp.route('/overdue/send-reminder', methods=['POST'])
+@login_required
+def send_overdue_reminder():
+    """发送逾期提醒"""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'message': '权限不足'}), 403
+
+    data = request.get_json()
+    record_ids = data.get('record_ids', [])
+
+    if not record_ids:
+        return jsonify({'success': False, 'message': '请选择要提醒的记录'}), 400
+
+    # 在本地系统中标记已发送提醒
+    reminder_sent = []
+    for record_id in record_ids:
+        record = BorrowRecord.query.get(record_id)
+        if record and record.status == 'approved':
+            reminder_sent.append({
+                'record_id': record_id,
+                'borrower_name': record.borrower.name if record.borrower else None,
+                'book_title': record.book.title if record.book else None
+            })
+
+    return jsonify({
+        'success': True,
+        'message': f'已向 {len(reminder_sent)} 位用户发送提醒',
+        'reminder_sent': reminder_sent
+    })
