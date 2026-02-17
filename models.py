@@ -102,6 +102,7 @@ class BorrowRecord(db.Model):
             'book_title': self.book.title if self.book else None,
             'borrower_id': self.borrower_id,
             'borrower_name': self.borrower.name if self.borrower else None,
+            'borrower_student_id': self.borrower.student_id if self.borrower else None,
             'status': self.status,
             'request_at': self.request_at.isoformat() if self.request_at else None,
             'approve_at': self.approve_at.isoformat() if self.approve_at else None,

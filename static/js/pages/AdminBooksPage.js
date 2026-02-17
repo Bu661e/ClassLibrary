@@ -246,6 +246,15 @@ export default {
                                 </el-tag>
                             </template>
                         </el-table-column>
+                        <el-table-column label="借阅人" width="150">
+                            <template #default="scope">
+                                <template v-if="scope.row.current_borrow && scope.row.status !== 'available'">
+                                    <div style="font-size: 13px;">{{ scope.row.current_borrow.borrower_name }}</div>
+                                    <div style="font-size: 12px; color: #9CA3AF;">{{ scope.row.current_borrow.borrower_student_id }}</div>
+                                </template>
+                                <span v-else style="color: #9CA3AF;">-</span>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="created_at" label="录入时间" width="100">
                             <template #default="scope">
                                 {{ formatDate(scope.row.created_at) }}
