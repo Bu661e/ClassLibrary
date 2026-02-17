@@ -23,7 +23,10 @@
       "Bash(pip install:*)",
       "Bash(pip3 install:*)",
       "Bash(python -m pytest:*)",
-      "Bash(python -m pip:*)"
+      "Bash(python -m pip:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm install -g uipro-cli)",
+      "Bash(uipro init:*)"
     ]
   }
 }

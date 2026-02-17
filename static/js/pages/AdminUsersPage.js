@@ -128,11 +128,6 @@ export default {
                                 <el-tag v-else type="success">普通用户</el-tag>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="created_at" label="创建时间" width="120">
-                            <template #default="scope">
-                                {{ formatDate(scope.row.created_at) }}
-                            </template>
-                        </el-table-column>
                         <el-table-column label="操作" fixed="right">
                             <template #default="scope">
                                 <el-button
