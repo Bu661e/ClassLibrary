@@ -26,7 +26,8 @@ export default {
             loading.value = true;
             try {
                 const res = await bookApi.list();
-                books.value = res.books || [];
+                // 按ID从小到大排序
+                books.value = (res.books || []).sort((a, b) => a.id - b.id);
             } catch (error) {
                 ElMessage.error('加载图书列表失败');
             } finally {
@@ -107,33 +108,29 @@ export default {
             }
         };
 
-        const handleChangeStatus = async (book) => {
-            const statusOptions = [
-                { value: 'available', label: '在库' },
-                { value: 'pending_borrow', label: '借阅审核中' },
-                { value: 'borrowed', label: '已借出' },
-                { value: 'pending_return', label: '归还审核中' },
-                { value: 'unavailable', label: '不可用' }
-            ];
+        const handleScrapBook = async (book) => {
+            if (book.status !== 'available') {
+                ElMessage.warning('只能在图书在库时报废');
+                return;
+            }
 
             try {
-                const { value } = await ElMessageBox.prompt('请选择图书状态', '修改状态', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    inputType: 'select',
-                    inputOptions: statusOptions,
-                    inputValue: book.status,
-                    inputValidator: (value) => {
-                        return value ? true : '请选择状态';
+                await ElMessageBox.confirm(
+                    `确定要报废图书《${book.title}》吗？报废后该书将不可再借阅。`,
+                    '报废图书',
+                    {
+                        confirmButtonText: '确定报废',
+                        cancelButtonText: '取消',
+                        type: 'warning'
                     }
-                });
+                );
 
-                await bookApi.updateStatus(book.id, value);
-                ElMessage.success('状态更新成功');
+                await bookApi.updateStatus(book.id, 'unavailable');
+                ElMessage.success('图书已报废');
                 loadBooks();
             } catch (error) {
                 if (error !== 'cancel') {
-                    ElMessage.error(error.message || '更新失败');
+                    ElMessage.error(error.message || '操作失败');
                 }
             }
         };
@@ -197,7 +194,7 @@ export default {
             handleAddBook,
             showEditDialog,
             handleEditBook,
-            handleChangeStatus,
+            handleScrapBook,
             getStatusText,
             getStatusType,
             getSourceText,
@@ -265,8 +262,8 @@ export default {
                                 <el-button type="primary" size="small" @click="showEditDialog(scope.row)">
                                     编辑
                                 </el-button>
-                                <el-button type="warning" size="small" @click="handleChangeStatus(scope.row)">
-                                    状态
+                                <el-button type="danger" size="small" @click="handleScrapBook(scope.row)" :disabled="scope.row.status !== 'available'">
+                                    报废
                                 </el-button>
                             </template>
                         </el-table-column>

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
-from models import User, Book, BorrowRecord, Setting, db
+from models import User, Book, BorrowRecord, Setting, DonationRequest, db
 from datetime import datetime, timezone
 
 bp = Blueprint('admin', __name__, url_prefix='/api/admin')
@@ -147,6 +147,12 @@ def get_dashboard():
     borrowed_books = Book.query.filter_by(status='borrowed').count()
     total_users = User.query.filter_by(is_admin=False).count()
 
+    # 待审核数量（借阅申请 + 归还申请 + 捐赠申请）
+    pending_borrows = BorrowRecord.query.filter(BorrowRecord.status.in_(['pending', 'donor_pending'])).count()
+    pending_returns = BorrowRecord.query.filter_by(status='return_pending').count()
+    pending_donations = DonationRequest.query.filter_by(status='pending').count()
+    pending_reviews = pending_borrows + pending_returns + pending_donations
+
     # 热门图书榜（借阅次数最多的书）
     from sqlalchemy import func
     popular_books = db.session.query(
@@ -178,7 +184,11 @@ def get_dashboard():
             'total_books': total_books,
             'available_books': available_books,
             'borrowed_books': borrowed_books,
-            'total_users': total_users
+            'total_users': total_users,
+            'pending_reviews': pending_reviews,
+            'pending_borrows': pending_borrows,
+            'pending_returns': pending_returns,
+            'pending_donations': pending_donations
         },
         'popular_books': [{'title': b.title, 'count': b.borrow_count} for b in popular_books],
         'top_readers': [{'name': r.name, 'count': r.read_count} for r in top_readers],

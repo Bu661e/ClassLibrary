@@ -8,7 +8,10 @@ export default {
         const stats = ref({
             total_books: 0,
             available_books: 0,
-            borrowed_books: 0,
+            pending_reviews: 0,
+            pending_borrows: 0,
+            pending_returns: 0,
+            pending_donations: 0,
             total_users: 0
         });
         const popularBooks = ref([]);
@@ -88,6 +91,25 @@ export default {
         <div v-loading="loading">
             <!-- 统计卡片 - Bento Grid -->
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px;">
+                <!-- 待审核 -->
+                <div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                        <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.8); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div style="font-size: 28px; font-weight: 700; color: #F59E0B; margin-bottom: 4px;">{{ stats.pending_reviews }}</div>
+                    <div style="font-size: 14px; color: #92400E;">
+                        <span v-if="stats.pending_reviews > 0">
+                            待审核 ({{ stats.pending_borrows }}借 / {{ stats.pending_returns }}还 / {{ stats.pending_donations }}赠)
+                        </span>
+                        <span v-else>待审核</span>
+                    </div>
+                </div>
+
                 <!-- 图书总数 -->
                 <div style="background: #FFFFFF; border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
@@ -114,22 +136,6 @@ export default {
                     </div>
                     <div style="font-size: 28px; font-weight: 700; color: #22C55E; margin-bottom: 4px;">{{ stats.available_books }}</div>
                     <div style="font-size: 14px; color: #8E8E93;">在库图书</div>
-                </div>
-
-                <!-- 已借出 -->
-                <div style="background: #FFFFFF; border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                        <div style="width: 48px; height: 48px; background: #FEF3C7; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                            </svg>
-                        </div>
-                    </div>
-                    <div style="font-size: 28px; font-weight: 700; color: #F59E0B; margin-bottom: 4px;">{{ stats.borrowed_books }}</div>
-                    <div style="font-size: 14px; color: #8E8E93;">已借出</div>
                 </div>
 
                 <!-- 用户总数 -->
