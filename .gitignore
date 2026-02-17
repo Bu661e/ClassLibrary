@@ -6,9 +6,32 @@ __pycache__/
 *.db
 *.sqlite
 *.sqlite3
+!library.db
 instance/
 .pytest_cache/
 .coverage
 htmlcov/
 .venv/
 venv/
+
+# 隐藏文件
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Cookie 文件（包含会话）
+cookies.txt
+cookies_user.txt
+
+
+# 环境变量
+.env
+.env.local
+
+# 日志
+*.log
