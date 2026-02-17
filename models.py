@@ -45,8 +45,25 @@ class Book(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     
     donor = db.relationship('User', foreign_keys=[donor_id])
+    borrow_records = db.relationship('BorrowRecord', backref='book_record', lazy='dynamic')
     
     def to_dict(self):
+        # 获取借阅历史
+        borrow_history = []
+        if hasattr(self, 'borrow_records'):
+            borrow_history = [record.to_dict() for record in self.borrow_records]
+
+        # 获取当前借阅记录
+        current_borrow = None
+        if self.status in ['borrowed', 'pending_borrow', 'pending_return']:
+            from sqlalchemy import or_
+            current_record = BorrowRecord.query.filter(
+                BorrowRecord.book_id == self.id,
+                BorrowRecord.status.in_(['approved', 'pending', 'donor_pending', 'return_pending'])
+            ).first()
+            if current_record:
+                current_borrow = current_record.to_dict()
+
         return {
             'id': self.id,
             'title': self.title,
@@ -58,7 +75,9 @@ class Book(db.Model):
             'donor_id': self.donor_id,
             'donor_name': self.donor.name if self.donor else None,
             'status': self.status,
-            'created_at': self.created_at.isoformat() if self.created_at else None
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'borrow_history': borrow_history,
+            'current_borrow': current_borrow
         }
 
 
@@ -86,7 +105,9 @@ class BorrowRecord(db.Model):
             'status': self.status,
             'request_at': self.request_at.isoformat() if self.request_at else None,
             'approve_at': self.approve_at.isoformat() if self.approve_at else None,
-            'return_at': self.return_at.isoformat() if self.return_at else None
+            'return_at': self.return_at.isoformat() if self.return_at else None,
+            'created_at': self.request_at.isoformat() if self.request_at else None,
+            'updated_at': self.return_at.isoformat() if self.return_at else (self.approve_at.isoformat() if self.approve_at else self.request_at.isoformat())
         }
 
 

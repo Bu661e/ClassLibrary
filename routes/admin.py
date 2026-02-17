@@ -164,8 +164,12 @@ def get_dashboard():
     max_days_setting = Setting.query.filter_by(key='max_borrow_days').first()
     max_days = int(max_days_setting.value) if max_days_setting else 30
 
+    from datetime import timedelta
+    overdue_threshold = datetime.now(timezone.utc) - timedelta(days=max_days)
+
     overdue_records = BorrowRecord.query.filter(
-        BorrowRecord.status == 'approved'
+        BorrowRecord.status == 'approved',
+        BorrowRecord.approve_at < overdue_threshold
     ).all()
 
     return jsonify({

@@ -1,11 +1,12 @@
-const { ref, onMounted } = Vue;
+const { ref, onMounted, watch } = Vue;
 const { ElMessage, ElMessageBox } = ElementPlus;
-import { bookApi } from '../api.js';
+import { bookApi, adminApi } from '../api.js';
 
 export default {
     name: 'AdminBooksPage',
     setup() {
         const books = ref([]);
+        const users = ref([]);
         const loading = ref(false);
         const dialogVisible = ref(false);
         const editDialogVisible = ref(false);
@@ -33,6 +34,15 @@ export default {
             }
         };
 
+        const loadUsers = async () => {
+            try {
+                const res = await adminApi.getUsers();
+                users.value = res.users || [];
+            } catch (error) {
+                ElMessage.error('加载用户列表失败');
+            }
+        };
+
         const showAddDialog = () => {
             dialogVisible.value = true;
             newBook.value = {
@@ -49,6 +59,11 @@ export default {
         const handleAddBook = async () => {
             if (!newBook.value.title || !newBook.value.author || !newBook.value.publisher) {
                 ElMessage.warning('请填写书名、作者和出版社');
+                return;
+            }
+
+            if (newBook.value.source === 'donated' && !newBook.value.donor_id) {
+                ElMessage.warning('请选择捐赠者');
                 return;
             }
 
@@ -164,10 +179,14 @@ export default {
             window.location.href = '/#/login';
         };
 
-        onMounted(loadBooks);
+        onMounted(() => {
+            loadBooks();
+            loadUsers();
+        });
 
         return {
             books,
+            users,
             loading,
             dialogVisible,
             editDialogVisible,
@@ -277,6 +296,16 @@ export default {
                             <el-radio label="class">班级购买</el-radio>
                             <el-radio label="donated">个人捐赠</el-radio>
                         </el-radio-group>
+                    </el-form-item>
+                    <el-form-item v-if="newBook.source === 'donated'" label="捐赠者" required>
+                        <el-select v-model="newBook.donor_id" placeholder="请选择捐赠者" style="width: 100%">
+                            <el-option
+                                v-for="u in users"
+                                :key="u.id"
+                                :label="u.name + ' (' + u.student_id + ')'"
+                                :value="u.id"
+                            />
+                        </el-select>
                     </el-form-item>
                 </el-form>
                 <template #footer>
