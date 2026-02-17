@@ -77,12 +77,32 @@ export default {
             return result;
         });
 
+        // 分页
+        const currentPage = ref(1);
+        const pageSize = ref(10);
+
+        const paginatedBooks = computed(() => {
+            const start = (currentPage.value - 1) * pageSize.value;
+            const end = start + pageSize.value;
+            return filteredBooks.value.slice(start, end);
+        });
+
+        const handlePageChange = (page) => {
+            currentPage.value = page;
+        };
+
+        const handleSizeChange = (size) => {
+            pageSize.value = size;
+            currentPage.value = 1;
+        };
+
         const resetSearch = () => {
             searchTitle.value = '';
             searchAuthor.value = '';
             searchStatus.value = '';
             searchSource.value = '';
             searchDateRange.value = [];
+            currentPage.value = 1;
         };
 
         const loadBooks = async () => {
@@ -247,6 +267,7 @@ export default {
         return {
             books,
             filteredBooks,
+            paginatedBooks,
             users,
             loading,
             dialogVisible,
@@ -259,6 +280,8 @@ export default {
             searchStatus,
             searchSource,
             searchDateRange,
+            currentPage,
+            pageSize,
             showAddDialog,
             handleAddBook,
             showEditDialog,
@@ -269,7 +292,9 @@ export default {
             getSourceText,
             formatDate,
             logout,
-            resetSearch
+            resetSearch,
+            handlePageChange,
+            handleSizeChange
         };
     },
     template: `
@@ -323,7 +348,7 @@ export default {
 
             <!-- 图书列表 -->
             <div style="background: #FFFFFF; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                <el-table :data="filteredBooks" style="width: 100%">
+                <el-table :data="paginatedBooks" style="width: 100%">
                         <el-table-column prop="id" label="ID" width="60" />
                         <el-table-column prop="title" label="书名" min-width="150" />
                         <el-table-column prop="author" label="作者" width="100" />
@@ -366,6 +391,19 @@ export default {
                             </template>
                         </el-table-column>
                     </el-table>
+                </div>
+
+                <!-- 分页 -->
+                <div style="padding: 16px; display: flex; justify-content: flex-end;">
+                    <el-pagination
+                        v-model:current-page="currentPage"
+                        v-model:page-size="pageSize"
+                        :page-sizes="[10, 20, 50, 100]"
+                        :total="filteredBooks.length"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        @current-change="handlePageChange"
+                        @size-change="handleSizeChange"
+                    />
                 </div>
 
             <!-- 新增图书弹窗 -->

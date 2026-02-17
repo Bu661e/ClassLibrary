@@ -73,7 +73,7 @@ export default {
                                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                             </svg>
                         </div>
-                        <span style="font-size: 16px; font-weight: 600; color: #1D1D1F;">图书管理</span>
+                        <span style="font-size: 16px; font-weight: 600; color: #1D1D1F;">班级图书共享管理系统</span>
                     </div>
                 </div>
 
@@ -98,6 +98,13 @@ export default {
                             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                         </svg>
                         <span>图书管理</span>
+                    </el-menu-item>
+                    <el-menu-item index="/admin/borrow-history" style="margin: 4px 12px; border-radius: 12px; height: 48px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span>借阅历史</span>
                     </el-menu-item>
                     <el-menu-item index="/admin/borrows" style="margin: 4px 12px; border-radius: 12px; height: 48px;">
                         <div style="position: relative; display: flex; align-items: center; width: 100%;">
@@ -159,7 +166,7 @@ export default {
                 <!-- 顶部栏 -->
                 <el-header style="background: #FFFFFF; border-bottom: 1px solid #F0F0F0; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 64px;">
                     <div style="font-size: 14px; color: #8E8E93;">
-                        管理后台
+                        
                     </div>
                     <div style="display: flex; align-items: center; gap: 16px;">
                         <div style="display: flex; align-items: center; gap: 8px;">

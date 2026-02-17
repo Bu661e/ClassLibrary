@@ -14,6 +14,7 @@ import AdminBooksPage from './pages/AdminBooksPage.js';
 import AdminSettingsPage from './pages/AdminSettingsPage.js';
 import AdminDonationsPage from './pages/AdminDonationsPage.js';
 import AdminWishlistsPage from './pages/AdminWishlistsPage.js';
+import AdminBorrowHistoryPage from './pages/AdminBorrowHistoryPage.js';
 import WishlistPage from './pages/WishlistPage.js';
 import DonationPage from './pages/DonationPage.js';
 import AdminLayout from './components/AdminLayout.js';
@@ -56,6 +57,7 @@ const routes = [
             { path: '', component: AdminDashboardPage },
             { path: 'books', component: AdminBooksPage },
             { path: 'borrows', component: AdminBorrowsPage },
+            { path: 'borrow-history', component: AdminBorrowHistoryPage },
             { path: 'donations', component: AdminDonationsPage },
             { path: 'wishlists', component: AdminWishlistsPage },
             { path: 'settings', component: AdminSettingsPage },
