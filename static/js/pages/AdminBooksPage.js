@@ -206,30 +206,29 @@ export default {
         };
     },
     template: `
-        <div>
-            <!-- 顶部导航栏 -->
-            <el-header style="background: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
-                <h1>图书管理</h1>
-                <el-button type="danger" size="small" @click="logout">退出</el-button>
-            </el-header>
+        <div v-loading="loading">
+            <!-- 页面标题 -->
+            <div style="margin-bottom: 24px;">
+                <h2 style="margin: 0; font-size: 20px; font-weight: 600; color: #1D1D1F;">图书管理</h2>
+            </div>
 
-            <el-main v-loading="loading">
-                <el-card>
-                    <template #header>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h2 style="margin: 0;">图书管理</h2>
-                            <div>
-                                <el-button type="primary" size="small" @click="loadBooks">
-                                    刷新
-                                </el-button>
-                                <el-button type="success" size="small" @click="showAddDialog">
-                                    录入图书
-                                </el-button>
-                            </div>
-                        </div>
-                    </template>
+            <!-- 操作栏 -->
+            <div style="background: #FFFFFF; border-radius: 12px; padding: 16px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <el-button type="primary" @click="showAddDialog">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        录入图书
+                    </el-button>
+                    <el-button @click="loadBooks">刷新</el-button>
+                </div>
+            </div>
 
-                    <el-table :data="books" border style="width: 100%">
+            <!-- 图书列表 -->
+            <div style="background: #FFFFFF; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <el-table :data="books" style="width: 100%">
                         <el-table-column prop="id" label="ID" width="60" />
                         <el-table-column prop="title" label="书名" min-width="150" />
                         <el-table-column prop="author" label="作者" width="100" />
@@ -263,8 +262,7 @@ export default {
                             </template>
                         </el-table-column>
                     </el-table>
-                </el-card>
-            </el-main>
+                </div>
 
             <!-- 新增图书弹窗 -->
             <el-dialog v-model="dialogVisible" title="录入图书" width="500px">

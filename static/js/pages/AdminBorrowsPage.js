@@ -137,21 +137,16 @@ const AdminBorrowsPage = {
         };
     },
     template: `
-        <div class="admin-borrows-page">
-            <!-- 顶部导航栏 -->
-            <el-header style="background: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
-                <h1>借阅审核</h1>
-                <el-button type="danger" size="small" @click="logout">退出</el-button>
-            </el-header>
+        <div v-loading="loading">
+            <div style="margin-bottom: 24px;">
+                <h2 style="margin: 0; font-size: 20px; font-weight: 600; color: #1D1D1F;">借阅审核</h2>
+            </div>
 
-            <!-- 主内容区 -->
-            <el-main class="main-content">
-                <h2 class="page-title">借阅审核</h2>
-                
-                <el-tabs v-model="activeTab" @tab-change="handleTabChange" type="border-card">
+            <div style="background: #FFFFFF; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <el-tabs v-model="activeTab" @tab-change="handleTabChange" style="padding: 16px;">
                     <!-- 待处理借阅标签 -->
                     <el-tab-pane label="待处理借阅" name="borrow">
-                        <el-table :data="borrowRecords" v-loading="loading" style="width: 100%">
+                        <el-table :data="borrowRecords" style="width: 100%">
                             <el-table-column prop="book_title" label="书名" min-width="200">
                                 <template #default="scope">
                                     <strong>{{ scope.row.book_title }}</strong>
@@ -242,7 +237,7 @@ const AdminBorrowsPage = {
                         <el-empty v-if="!loading && returnRecords.length === 0" description="暂无待处理归还申请" />
                     </el-tab-pane>
                 </el-tabs>
-            </el-main>
+            </div>
         </div>
     `
 };

@@ -108,26 +108,18 @@ export default {
         };
     },
     template: `
-        <div>
-            <!-- 顶部导航栏 -->
-            <el-header style="background: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
-                <h1>用户管理</h1>
-                <el-button type="danger" size="small" @click="logout">退出</el-button>
-            </el-header>
+        <div v-loading="loading">
+            <div style="margin-bottom: 24px;">
+                <h2 style="margin: 0; font-size: 20px; font-weight: 600; color: #1D1D1F;">用户管理</h2>
+            </div>
 
-            <el-main v-loading="loading">
-                <el-card>
-                    <template #header>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h2 style="margin: 0;">班级图书共享管理系统 - 用户管理</h2>
-                            <el-button type="primary" size="small" @click="showAddDialog">
-                                新增用户
-                            </el-button>
-                        </div>
-                    </template>
+            <div style="background: #FFFFFF; border-radius: 12px; padding: 16px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <el-button type="primary" @click="showAddDialog">新增用户</el-button>
+            </div>
 
-                    <el-table :data="users" border style="width: 100%">
-                        <el-table-column prop="id" label="ID" width="60" />
+            <div style="background: #FFFFFF; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <el-table :data="users" border style="width: 100%">
+                    <el-table-column prop="id" label="ID" width="60" />
                         <el-table-column prop="student_id" label="学号" width="120" />
                         <el-table-column prop="name" label="姓名" width="120" />
                         <el-table-column prop="is_admin" label="角色" width="100">
@@ -154,8 +146,6 @@ export default {
                             </template>
                         </el-table-column>
                     </el-table>
-                </el-card>
-            </el-main>
 
             <!-- 新增用户弹窗 -->
             <el-dialog v-model="dialogVisible" title="新增用户" width="500px">

@@ -103,14 +103,13 @@ export default {
         };
     },
     template: `
-        <div>
-            <el-header style="background: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
-                <h1>心愿单管理</h1>
-                <el-button type="danger" size="small" @click="logout">退出</el-button>
-            </el-header>
+        <div v-loading="loading">
+            <div style="margin-bottom: 24px;">
+                <h2 style="margin: 0; font-size: 20px; font-weight: 600; color: #1D1D1F;">心愿单管理</h2>
+            </div>
 
-            <el-main v-loading="loading">
-                <el-tabs v-model="activeTab" @tab-change="handleTabChange">
+            <div style="background: #FFFFFF; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <el-tabs v-model="activeTab" @tab-change="handleTabChange" style="padding: 16px;">
                     <el-tab-pane label="待处理" name="pending">
                         <el-table :data="wishlists" style="width: 100%">
                             <el-table-column prop="book_title" label="书名" min-width="150" />
@@ -172,7 +171,7 @@ export default {
                         </el-table>
                     </el-tab-pane>
                 </el-tabs>
-            </el-main>
+            </div>
         </div>
     `
 };

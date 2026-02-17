@@ -52,23 +52,19 @@ export default {
         };
     },
     template: `
-        <div>
-            <el-header style="background: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
-                <h1>系统设置</h1>
-                <el-button type="danger" size="small" @click="logout">退出</el-button>
-            </el-header>
+        <div v-loading="loading">
+            <div style="margin-bottom: 24px;">
+                <h2 style="margin: 0; font-size: 20px; font-weight: 600; color: #1D1D1F;">系统设置</h2>
+            </div>
 
-            <el-main v-loading="loading">
-                <el-card style="max-width: 600px; margin: 20px auto;">
-                    <template #header>
-                        <h3>借阅规则设置</h3>
-                    </template>
+            <div style="background: #FFFFFF; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); max-width: 600px;">
+                <h3 style="margin: 0 0 20px 0; font-size: 16px; font-weight: 600; color: #1D1D1F;">借阅规则设置</h3>
 
-                    <el-form label-width="150px">
-                        <el-form-item label="最大借阅天数">
-                            <el-input-number v-model="settings.max_borrow_days" :min="1" :max="365" />
-                            <span style="margin-left: 10px; color: #999;">天</span>
-                        </el-form-item>
+                <el-form label-width="150px">
+                    <el-form-item label="最大借阅天数">
+                        <el-input-number v-model="settings.max_borrow_days" :min="1" :max="365" />
+                        <span style="margin-left: 10px; color: #999;">天</span>
+                    </el-form-item>
 
                         <el-form-item label="单人最大持书量">
                             <el-input-number v-model="settings.max_books_per_user" :min="1" :max="20" />
@@ -79,8 +75,8 @@ export default {
                             <el-button type="primary" @click="saveSettings">保存设置</el-button>
                         </el-form-item>
                     </el-form>
-                </el-card>
-            </el-main>
+                </div>
+            </div>
         </div>
     `
 };
