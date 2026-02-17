@@ -5,6 +5,10 @@ import LoginPage from './pages/LoginPage.js';
 import HomePage from './pages/HomePage.js';
 import MyBorrowsPage from './pages/MyBorrowsPage.js';
 import AdminBorrowsPage from './pages/AdminBorrowsPage.js';
+import BookDetailPage from './pages/BookDetailPage.js';
+import DonorConfirmsPage from './pages/DonorConfirmsPage.js';
+import AdminDashboardPage from './pages/AdminDashboardPage.js';
+import AdminUsersPage from './pages/AdminUsersPage.js';
 
 const App = {
     setup() {
@@ -32,8 +36,12 @@ const App = {
 const routes = [
     { path: '/login', component: LoginPage },
     { path: '/', component: HomePage },
+    { path: '/books/:id', component: BookDetailPage },
     { path: '/my-borrows', component: MyBorrowsPage },
-    { path: '/admin/borrows', component: AdminBorrowsPage }
+    { path: '/donor-confirms', component: DonorConfirmsPage },
+    { path: '/admin', component: AdminDashboardPage },
+    { path: '/admin/borrows', component: AdminBorrowsPage },
+    { path: '/admin/users', component: AdminUsersPage }
 ];
 
 const router = createRouter({

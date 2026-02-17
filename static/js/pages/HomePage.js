@@ -126,8 +126,8 @@ export default {
                 <div>
                     <span style="margin-right: 20px;">{{ user?.name }}</span>
                     <el-button type="info" size="small" @click="$router.push('/my-borrows')">我的借阅</el-button>
-                    <el-button v-if="isAdmin" type="warning" size="small" @click="$router.push('/admin/borrows')">借阅审核</el-button>
-                    <el-button v-if="isAdmin" type="success" size="small" @click="showAddDialog">录入图书</el-button>
+                    <el-button type="success" size="small" @click="$router.push('/donor-confirms')">捐赠确认</el-button>
+                    <el-button v-if="isAdmin" type="primary" size="small" @click="$router.push('/admin')">管理后台</el-button>
                     <el-button type="danger" size="small" @click="logout">退出</el-button>
                 </div>
             </el-header>
