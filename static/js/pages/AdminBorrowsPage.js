@@ -33,10 +33,10 @@ const AdminBorrowsPage = {
                 // 获取 pending 和 donor_pending 状态的记录
                 const pendingRes = await adminApi.getBorrows('pending');
                 const donorPendingRes = await adminApi.getBorrows('donor_pending');
-                
-                const pending = pendingRes.data || [];
-                const donorPending = donorPendingRes.data || [];
-                
+
+                const pending = pendingRes.records || [];
+                const donorPending = donorPendingRes.records || [];
+
                 borrowRecords.value = [...pending, ...donorPending];
             } catch (error) {
                 ElMessage.error('获取借阅申请失败: ' + error.message);
@@ -50,7 +50,7 @@ const AdminBorrowsPage = {
             try {
                 loading.value = true;
                 const res = await adminApi.getBorrows('return_pending');
-                returnRecords.value = res.data || [];
+                returnRecords.value = res.records || [];
             } catch (error) {
                 ElMessage.error('获取归还申请失败: ' + error.message);
             } finally {
