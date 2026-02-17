@@ -3,11 +3,8 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
-*.db
 *.sqlite
 *.sqlite3
-!library.db
-instance/
 .pytest_cache/
 .coverage
 htmlcov/
