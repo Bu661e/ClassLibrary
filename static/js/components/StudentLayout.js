@@ -1,4 +1,4 @@
-const { ref } = Vue;
+const { ref, onMounted } = Vue;
 
 export default {
     name: 'StudentLayout',
@@ -11,20 +11,43 @@ export default {
     setup() {
         const user = ref(JSON.parse(localStorage.getItem('user') || 'null'));
         const isAdmin = ref(user.value?.is_admin || false);
+        const pendingDonationCount = ref(0);
 
         const menuItems = [
             { path: '/', label: '图书列表', icon: 'book' },
             { path: '/my-borrows', label: '我的借阅', icon: 'list' },
             { path: '/wishlist', label: '心愿单', icon: 'star' },
-            { path: '/donations', label: '我的捐赠', icon: 'heart' }
+            { path: '/donations', label: '我的捐赠', icon: 'heart', badge: true }
         ];
+
+        // 获取待确认的捐赠借阅数量
+        const loadPendingDonationCount = async () => {
+            try {
+                const res = await fetch('/api/donations', {
+                    credentials: 'same-origin'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    // 统计有待确认借阅的图书数量
+                    pendingDonationCount.value = (data.donated_books || []).filter(b => b.has_pending_confirm).length;
+                }
+            } catch (e) {
+                console.error('Failed to load pending donation count:', e);
+            }
+        };
 
         const logout = () => {
             localStorage.removeItem('user');
             window.location.href = '/#/login';
         };
 
-        return { user, isAdmin, menuItems, logout };
+        onMounted(() => {
+            loadPendingDonationCount();
+            // 监听借阅审批变化事件
+            window.addEventListener('donation-count-update', loadPendingDonationCount);
+        });
+
+        return { user, isAdmin, menuItems, logout, pendingDonationCount };
     },
     template: `
         <div style="display: flex; min-height: 100vh; background: #F5F5F7;">
@@ -83,6 +106,12 @@ export default {
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                         </svg>
                         {{ item.label }}
+                        <span
+                            v-if="item.badge && pendingDonationCount > 0"
+                            style="background: #EF4444; color: white; font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 10px; min-width: 18px; text-align: center; margin-left: auto;"
+                        >
+                            {{ pendingDonationCount }}
+                        </span>
                     </div>
                 </div>
             </aside>

@@ -98,6 +98,8 @@ export default {
                 await donorApi.approve(confirm.id);
                 ElMessage.success('已同意借阅');
                 loadDonations();
+                // 通知侧边栏更新待确认数量
+                window.dispatchEvent(new Event('donation-count-update'));
             } catch (error) {
                 if (error !== 'cancel') {
                     ElMessage.error(error.message || '操作失败');
@@ -124,6 +126,8 @@ export default {
                 await donorApi.reject(confirm.id);
                 ElMessage.success('已拒绝借阅');
                 loadDonations();
+                // 通知侧边栏更新待确认数量
+                window.dispatchEvent(new Event('donation-count-update'));
             } catch (error) {
                 if (error !== 'cancel') {
                     ElMessage.error(error.message || '操作失败');
