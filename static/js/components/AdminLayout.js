@@ -1,10 +1,37 @@
-const { ref, computed } = Vue;
+const { ref, computed, onMounted } = Vue;
+const { ElBadge } = ElementPlus;
+import { adminApi, wishlistApi } from '../api.js';
 
 export default {
     name: 'AdminLayout',
+    components: { ElBadge },
     setup() {
         const user = ref(JSON.parse(localStorage.getItem('user') || 'null'));
         const route = VueRouter.useRoute();
+
+        // 待审核数量
+        const pendingBorrows = ref(0);
+        const pendingDonations = ref(0);
+        const pendingWishlists = ref(0);
+
+        const loadPendingCounts = async () => {
+            try {
+                const res = await adminApi.getDashboard();
+                pendingBorrows.value = (res.stats.pending_borrows || 0) + (res.stats.pending_returns || 0);
+                pendingDonations.value = res.stats.pending_donations || 0;
+            } catch (error) {
+                console.error('加载待审核数量失败:', error);
+            }
+        };
+
+        const loadPendingWishlists = async () => {
+            try {
+                const res = await wishlistApi.adminList();
+                pendingWishlists.value = (res.wishlists || []).filter(w => w.status === 'pending').length;
+            } catch (error) {
+                console.error('加载心愿单数量失败:', error);
+            }
+        };
 
         const activeMenu = computed(() => {
             return route.path;
@@ -15,10 +42,22 @@ export default {
             window.location.href = '/#/login';
         };
 
+        // 定时刷新待审核数量
+        onMounted(() => {
+            loadPendingCounts();
+            loadPendingWishlists();
+            // 每30秒刷新一次
+            setInterval(loadPendingCounts, 30000);
+            setInterval(loadPendingWishlists, 30000);
+        });
+
         return {
             user,
             activeMenu,
-            logout
+            logout,
+            pendingBorrows,
+            pendingDonations,
+            pendingWishlists
         };
     },
     template: `
@@ -61,27 +100,40 @@ export default {
                         <span>图书管理</span>
                     </el-menu-item>
                     <el-menu-item index="/admin/borrows" style="margin: 4px 12px; border-radius: 12px; height: 48px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                        </svg>
-                        <span>借阅审核</span>
+                        <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                            <span>借阅审核</span>
+                            <span v-if="pendingBorrows > 0" style="position: absolute; right: 8px; background: #EF4444; color: white; font-size: 11px; font-weight: 600; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px;">
+                                {{ pendingBorrows > 99 ? '99+' : pendingBorrows }}
+                            </span>
+                        </div>
                     </el-menu-item>
                     <el-menu-item index="/admin/donations" style="margin: 4px 12px; border-radius: 12px; height: 48px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="12" y1="8" x2="12" y2="16"></line>
-                            <line x1="8" y1="12" x2="16" y2="12"></line>
-                        </svg>
-                        <span>捐赠审核</span>
+                        <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="12" y1="8" x2="12" y2="16"></line>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                            <span>捐赠审核</span>
+                            <span v-if="pendingDonations > 0" style="position: absolute; right: 8px; background: #EF4444; color: white; font-size: 11px; font-weight: 600; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px;">
+                                {{ pendingDonations > 99 ? '99+' : pendingDonations }}
+                            </span>
+                        </div>
                     </el-menu-item>
                     <el-menu-item index="/admin/wishlists" style="margin: 4px 12px; border-radius: 12px; height: 48px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 18.45 18.09 22.27 12 17.47 5.91 22.27 6 18.45 2 9.27 8.91 8.26 12 2"></polygon>
-                        </svg>
-                        <span>心愿单</span>
+                        <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 18.45 18.09 22.27 12 17.47 5.91 22.27 6 18.45 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <span>心愿汇总</span>
+                            <span v-if="pendingWishlists > 0" style="position: absolute; right: 8px; width: 8px; height: 8px; background: #F59E0B; border-radius: 50%;"></span>
+                        </div>
                     </el-menu-item>
                     <el-menu-item index="/admin/settings" style="margin: 4px 12px; border-radius: 12px; height: 48px;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
