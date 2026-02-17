@@ -1,14 +1,15 @@
 const { ref, computed, onMounted } = Vue;
 const { ElMessage, ElMessageBox } = ElementPlus;
 import { borrowApi } from '../api.js';
+import StudentLayout from '../components/StudentLayout.js';
 
 export default {
     name: 'MyBorrowsPage',
+    components: { StudentLayout },
     setup() {
         const records = ref([]);
         const loading = ref(false);
         const activeTab = ref('current');
-        const user = ref(JSON.parse(localStorage.getItem('user') || 'null'));
 
         const statusMap = {
             'pending': '待审核',
@@ -68,11 +69,10 @@ export default {
         const getStatusText = (status) => statusMap[status] || status;
         const getStatusType = (status) => statusTypeMap[status] || 'info';
 
-        // 计算剩余天数
         const getRemainingDays = (record) => {
             if (record.status !== 'approved' || !record.approve_at) return null;
             const approveDate = new Date(record.approve_at);
-            const maxDays = 30; // 默认30天，应该从设置中获取
+            const maxDays = 30;
             const dueDate = new Date(approveDate);
             dueDate.setDate(dueDate.getDate() + maxDays);
             const now = new Date();
@@ -87,43 +87,31 @@ export default {
             return date.toLocaleString('zh-CN');
         };
 
-        const logout = () => {
-            localStorage.removeItem('user');
-            window.location.href = '/#/login';
-        };
-
         onMounted(loadRecords);
 
         return {
             records,
             loading,
             activeTab,
-            user,
             currentRecords,
             historyRecords,
             handleReturn,
             getStatusText,
             getStatusType,
             getRemainingDays,
-            formatDate,
-            logout
+            formatDate
         };
     },
     template: `
-        <div>
-            <el-header style="background: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
-                <h1>我的借阅</h1>
-                <div>
-                    <span style="margin-right: 20px;">{{ user?.name }}</span>
-                    <el-button type="primary" size="small" @click="$router.push('/')">返回首页</el-button>
-                    <el-button type="danger" size="small" @click="logout">退出</el-button>
-                </div>
-            </el-header>
+        <StudentLayout>
+            <div style="margin-bottom: 24px;">
+                <h2 style="margin: 0; font-size: 20px; font-weight: 600; color: #1D1D1F;">我的借阅</h2>
+            </div>
 
-            <el-main v-loading="loading">
-                <el-tabs v-model="activeTab">
+            <div style="background: #FFFFFF; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <el-tabs v-model="activeTab" style="padding: 0 20px;">
                     <el-tab-pane label="当前借阅" name="current">
-                        <el-table :data="currentRecords" style="width: 100%" empty-text="暂无借阅记录">
+                        <el-table :data="currentRecords" v-loading="loading" empty-text="暂无借阅记录">
                             <el-table-column prop="book_title" label="书名" min-width="180" />
                             <el-table-column label="申请时间" width="180">
                                 <template #default="scope">
@@ -163,7 +151,7 @@ export default {
                     </el-tab-pane>
 
                     <el-tab-pane label="历史记录" name="history">
-                        <el-table :data="historyRecords" style="width: 100%" empty-text="暂无历史记录">
+                        <el-table :data="historyRecords" v-loading="loading" empty-text="暂无历史记录">
                             <el-table-column prop="book_title" label="书名" min-width="200" />
                             <el-table-column label="申请时间" width="180">
                                 <template #default="scope">
@@ -185,7 +173,7 @@ export default {
                         </el-table>
                     </el-tab-pane>
                 </el-tabs>
-            </el-main>
-        </div>
+            </div>
+        </StudentLayout>
     `
 };

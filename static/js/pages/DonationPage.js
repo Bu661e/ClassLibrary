@@ -1,9 +1,11 @@
 const { ref, onMounted } = Vue;
 const { ElMessage, ElMessageBox } = ElementPlus;
 import { donationApi } from '../api.js';
+import StudentLayout from '../components/StudentLayout.js';
 
 export default {
     name: 'DonationPage',
+    components: { StudentLayout },
     setup() {
         const loading = ref(false);
         const donations = ref([]);
@@ -16,7 +18,6 @@ export default {
             tags: '',
             reason: ''
         });
-        const user = ref(JSON.parse(localStorage.getItem('user') || 'null'));
 
         const statusMap = {
             'pending': '待审核',
@@ -68,11 +69,6 @@ export default {
             }
         };
 
-        const logout = () => {
-            localStorage.removeItem('user');
-            window.location.href = '/#/login';
-        };
-
         onMounted(loadDonations);
 
         return {
@@ -80,30 +76,20 @@ export default {
             donations,
             dialogVisible,
             newDonation,
-            user,
             statusMap,
             formatDate,
-            addDonation,
-            logout
+            addDonation
         };
     },
     template: `
-        <div>
-            <el-header style="background: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px;">
-                <h1>我的捐赠</h1>
-                <div>
-                    <span style="margin-right: 20px;">{{ user?.name }}</span>
-                    <el-button type="primary" size="small" @click="$router.push('/')">返回首页</el-button>
-                    <el-button type="danger" size="small" @click="logout">退出</el-button>
-                </div>
-            </el-header>
+        <StudentLayout>
+            <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0; font-size: 20px; font-weight: 600; color: #1D1D1F;">我的捐赠</h2>
+                <el-button type="success" @click="dialogVisible = true">申请捐赠图书</el-button>
+            </div>
 
-            <el-main v-loading="loading">
-                <div style="margin-bottom: 20px;">
-                    <el-button type="success" @click="dialogVisible = true">申请捐赠图书</el-button>
-                </div>
-
-                <el-table :data="donations" style="width: 100%">
+            <div style="background: #FFFFFF; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <el-table :data="donations" v-loading="loading" empty-text="暂无捐赠记录">
                     <el-table-column prop="title" label="书名" min-width="150" />
                     <el-table-column prop="author" label="作者" width="120" />
                     <el-table-column prop="publisher" label="出版社" width="150" />
@@ -122,37 +108,35 @@ export default {
                         </template>
                     </el-table-column>
                 </el-table>
+            </div>
 
-                <el-empty v-if="!loading && donations.length === 0" description="暂无捐赠记录" />
-
-                <!-- 添加捐赠弹窗 -->
-                <el-dialog v-model="dialogVisible" title="申请捐赠图书" width="500px">
-                    <el-form :model="newDonation" label-width="80px">
-                        <el-form-item label="书名" required>
-                            <el-input v-model="newDonation.title" placeholder="请输入书名" />
-                        </el-form-item>
-                        <el-form-item label="作者">
-                            <el-input v-model="newDonation.author" placeholder="请输入作者" />
-                        </el-form-item>
-                        <el-form-item label="出版社">
-                            <el-input v-model="newDonation.publisher" placeholder="请输入出版社" />
-                        </el-form-item>
-                        <el-form-item label="ISBN">
-                            <el-input v-model="newDonation.isbn" placeholder="请输入ISBN" />
-                        </el-form-item>
-                        <el-form-item label="标签">
-                            <el-input v-model="newDonation.tags" placeholder="多个标签用逗号分隔" />
-                        </el-form-item>
-                        <el-form-item label="说明">
-                            <el-input v-model="newDonation.reason" type="textarea" placeholder="捐赠说明" />
-                        </el-form-item>
-                    </el-form>
-                    <template #footer>
-                        <el-button @click="dialogVisible = false">取消</el-button>
-                        <el-button type="primary" @click="addDonation">提交申请</el-button>
-                    </template>
-                </el-dialog>
-            </el-main>
-        </div>
+            <!-- 添加捐赠弹窗 -->
+            <el-dialog v-model="dialogVisible" title="申请捐赠图书" width="500px">
+                <el-form :model="newDonation" label-width="80px">
+                    <el-form-item label="书名" required>
+                        <el-input v-model="newDonation.title" placeholder="请输入书名" />
+                    </el-form-item>
+                    <el-form-item label="作者">
+                        <el-input v-model="newDonation.author" placeholder="请输入作者" />
+                    </el-form-item>
+                    <el-form-item label="出版社">
+                        <el-input v-model="newDonation.publisher" placeholder="请输入出版社" />
+                    </el-form-item>
+                    <el-form-item label="ISBN">
+                        <el-input v-model="newDonation.isbn" placeholder="请输入ISBN" />
+                    </el-form-item>
+                    <el-form-item label="标签">
+                        <el-input v-model="newDonation.tags" placeholder="多个标签用逗号分隔" />
+                    </el-form-item>
+                    <el-form-item label="说明">
+                        <el-input v-model="newDonation.reason" type="textarea" placeholder="捐赠说明" />
+                    </el-form-item>
+                </el-form>
+                <template #footer>
+                    <el-button @click="dialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="addDonation">提交申请</el-button>
+                </template>
+            </el-dialog>
+        </StudentLayout>
     `
 };
