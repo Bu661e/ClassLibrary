@@ -11,14 +11,9 @@ cd ClassLibrary
 ### 2. 创建虚拟环境（可选）
 
 ```bash
-# 使用 uv（推荐）
-uv venv
-source .venv/bin/activate  # Linux/Mac
-# 或
-.venv\Scripts\activate     # Windows
-
 # 或使用 venv
 python -m venv .venv
+.venv\Scripts\activate     # Windows
 source .venv/bin/activate  # Linux/Mac
 ```
 
@@ -40,10 +35,10 @@ python app.py
 
 仓库已包含测试数据，默认账号：
 
-| 角色   | 学号   | 密码   |
-| ------ | ------ | ------ |
-| 管理员 | admin  | admin  |
-| 学生   | 10001  | 123456 |
+| 角色   | 学号    | 密码   |
+| ------ | ------- | ------ |
+| 管理员 | admin   | admin  |
+| 学生   | 2024001 | 123456 |
 
 ---
 
