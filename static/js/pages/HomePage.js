@@ -105,7 +105,6 @@ export default {
         const menuItems = [
             { path: '/', label: '图书列表', icon: 'book' },
             { path: '/my-borrows', label: '我的借阅', icon: 'list' },
-            { path: '/donor-confirms', label: '捐赠确认', icon: 'gift' },
             { path: '/wishlist', label: '心愿单', icon: 'star' },
             { path: '/donations', label: '我的捐赠', icon: 'heart' }
         ];

@@ -7,7 +7,6 @@ import HomePage from './pages/HomePage.js';
 import MyBorrowsPage from './pages/MyBorrowsPage.js';
 import AdminBorrowsPage from './pages/AdminBorrowsPage.js';
 import BookDetailPage from './pages/BookDetailPage.js';
-import DonorConfirmsPage from './pages/DonorConfirmsPage.js';
 import AdminDashboardPage from './pages/AdminDashboardPage.js';
 import AdminUsersPage from './pages/AdminUsersPage.js';
 import AdminBooksPage from './pages/AdminBooksPage.js';
@@ -47,7 +46,6 @@ const routes = [
     { path: '/', component: HomePage },
     { path: '/books/:id', component: BookDetailPage },
     { path: '/my-borrows', component: MyBorrowsPage },
-    { path: '/donor-confirms', component: DonorConfirmsPage },
     { path: '/wishlist', component: WishlistPage },
     { path: '/donations', component: DonationPage },
     {
@@ -78,7 +76,7 @@ router.beforeEach((to, from, next) => {
     } else if (user) {
         const userData = JSON.parse(user);
         // 管理员访问首页或学生页面时，跳转到管理后台
-        if (to.path === '/' || to.path.startsWith('/my-') || to.path.startsWith('/donor') || to.path.startsWith('/wishlist') || to.path.startsWith('/donation')) {
+        if (to.path === '/' || to.path.startsWith('/my-') || to.path.startsWith('/wishlist') || to.path.startsWith('/donation')) {
             if (userData.is_admin) {
                 next('/admin');
             } else {

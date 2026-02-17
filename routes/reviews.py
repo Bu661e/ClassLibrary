@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
-from models import BookReview, WishList, DonationRequest, Book, db
+from models import BookReview, WishList, DonationRequest, Book, DonorConfirm, BorrowRecord, db
 
 bp = Blueprint('reviews', __name__, url_prefix='/api')
 
@@ -140,9 +140,36 @@ def reject_wishlist(wish_id):
 @bp.route('/donations', methods=['GET'])
 @login_required
 def get_my_donations():
-    """获取我的捐赠申请"""
+    """获取我的捐赠申请和已捐赠的图书"""
+    # 获取用户的捐赠申请（待审核、已通过、已拒绝）
     donations = DonationRequest.query.filter_by(user_id=current_user.id).order_by(DonationRequest.created_at.desc()).all()
-    return jsonify({'success': True, 'donations': [d.to_dict() for d in donations]})
+
+    # 获取用户已捐赠的图书（捐赠申请通过后创建的图书）
+    donated_books = Book.query.filter_by(donor_id=current_user.id).order_by(Book.created_at.desc()).all()
+
+    # 为每本已捐赠的图书检查是否有待确认的借阅申请
+    books_with_confirms = []
+    for book in donated_books:
+        # 检查是否有待捐赠者确认的借阅申请
+        pending_confirm = DonorConfirm.query.filter_by(
+            donor_id=current_user.id,
+            status='pending'
+        ).join(BorrowRecord).filter(BorrowRecord.book_id == book.id).first()
+
+        book_dict = book.to_dict()
+        book_dict['has_pending_confirm'] = pending_confirm is not None
+        if pending_confirm:
+            book_dict['pending_confirm'] = {
+                'id': pending_confirm.id,
+                'borrow_record': pending_confirm.borrow_record.to_dict() if pending_confirm.borrow_record else None
+            }
+        books_with_confirms.append(book_dict)
+
+    return jsonify({
+        'success': True,
+        'donations': [d.to_dict() for d in donations],
+        'donated_books': books_with_confirms
+    })
 
 
 @bp.route('/donations', methods=['POST'])
