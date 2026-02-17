@@ -32,7 +32,7 @@ export default {
             <!-- 左侧导航 -->
             <aside style="width: 220px; background: #FFFFFF; box-shadow: 2px 0 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; flex-shrink: 0;">
                 <!-- Logo -->
-                <div style="padding: 20px; border-bottom: 1px solid #F0F0F0;">
+                <div style="padding: 14px; border-bottom: 1px solid #F0F0F0;">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
@@ -93,43 +93,43 @@ export default {
                         {{ item.label }}
                     </div>
                 </div>
-
-                <!-- 底部用户信息 -->
-                <div style="padding: 16px; border-top: 1px solid #F0F0F0;">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">
-                            {{ user?.name?.charAt(0) || '学' }}
-                        </div>
-                        <div>
-                            <div style="font-weight: 500; color: #1D1D1F; font-size: 14px;">{{ user?.name }}</div>
-                            <div style="font-size: 12px; color: #9CA3AF;">学生</div>
-                        </div>
-                    </div>
-                    <div
-                        v-if="isAdmin"
-                        @click="$router.push('/admin')"
-                        style="cursor: pointer; padding: 10px; border-radius: 8px; background: #FEF3C7; color: #D97706; font-size: 13px; text-align: center; margin-bottom: 8px; transition: all 0.2s;"
-                    >
-                        管理后台
-                    </div>
-                    <div
-                        @click="logout"
-                        style="cursor: pointer; padding: 10px; border-radius: 8px; background: #FEE2E2; color: #EF4444; font-size: 13px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;"
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <polyline points="16 17 21 12 16 7"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12"></line>
-                        </svg>
-                        退出登录
-                    </div>
-                </div>
             </aside>
 
             <!-- 主内容区 -->
-            <main style="flex: 1; padding: 24px; overflow-y: auto;">
-                <slot></slot>
-            </main>
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <!-- 顶部栏 -->
+                <header style="background: #FFFFFF; border-bottom: 1px solid #F0F0F0; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 64px; flex-shrink: 0;">
+                    <div style="font-size: 14px; color: #8E8E93;"></div>
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div
+                            v-if="isAdmin"
+                            @click="$router.push('/admin')"
+                            style="cursor: pointer; padding: 6px 12px; border-radius: 8px; background: #FEF3C7; color: #D97706; font-size: 13px; transition: all 0.2s;"
+                        >
+                            管理后台
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">
+                                {{ user?.name?.charAt(0) || '学' }}
+                            </div>
+                            <span style="font-weight: 500; color: #1D1D1F;">{{ user?.name }}</span>
+                        </div>
+                        <div @click="logout" style="cursor: pointer; padding: 6px 12px; border-radius: 8px; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <span style="color: #EF4444; font-size: 13px;">退出</span>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- 内容区域 -->
+                <main style="flex: 1; padding: 24px; overflow-y: auto;">
+                    <slot></slot>
+                </main>
+            </div>
         </div>
     `
 };
