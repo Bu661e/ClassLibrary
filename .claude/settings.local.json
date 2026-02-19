@@ -26,7 +26,17 @@
       "Bash(python -m pip:*)",
       "WebFetch(domain:github.com)",
       "Bash(npm install -g uipro-cli)",
-      "Bash(uipro init:*)"
+      "Bash(uipro init:*)",
+      "Bash(git tag:*)",
+      "Bash(git push)",
+      "Bash(git push origin v1.0)",
+      "Bash(git remote add:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git push:*)",
+      "Bash(ssh -T:*)",
+      "Bash(ssh-keyscan:*)",
+      "Bash(~/.ssh/known_hosts)",
+      "Bash(git remote remove:*)"
     ]
   }
 }

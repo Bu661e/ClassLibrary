@@ -5,6 +5,7 @@
 
 ```bash
 git clone https://gitee.com/dinghaitong/class-library.git
+git clone https://github.com/Bu661e/ClassLibrary.git
 cd ClassLibrary
 ```
 
