@@ -27,7 +27,7 @@ pip install flask flask-login flask-sqlalchemy sqlalchemy
 ### 4. 运行项目
 
 ```bash
-python app.py
+python3 app.py
 ```
 
 访问 http://localhost:5000
