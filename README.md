@@ -4,7 +4,7 @@
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/Bu661e/ClassLibrary.git
+git clone https://gitee.com/dinghaitong/class-library.git
 cd ClassLibrary
 ```
 
